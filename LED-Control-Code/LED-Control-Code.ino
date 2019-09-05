@@ -21,18 +21,25 @@ Ultrasonic ultrasonic(12,13); //Trig(er) 12, Echo 13
 
 int distance; //Distance variable
 int spl; //Sound level variable
+int brightness;
+int hue2;
 
 void setup() {
   FastLED.addLeds<WS2812B, LED_PIN, RGB>(leds, LED_COUNT); //Start comunication with the LEDs
+  Serial.begin(9600);//Debug
 }
 
 void loop(){
   distance = ultrasonic.read(); //Read distance from the ultrasonic sensor
   spl = analogRead(SPL_PIN); //Read sound level from the mic
-  FastLED.setBrightness(map(distance, 0, 50, 255, 0)); //Map the distance to the brightness
-  hue.unshift(map(spl, 0, 1024, 0, 359)); //Shift values in buffer 1 to the right
+  brightness = map(distance, 0, 300, 0, 255); //Map the distance to the brightness
+  FastLED.setBrightness(brightness); 
+  Serial.println(brightness);//Debug
+  hue2 = map(spl, 0, 1024, 0, 359); //Map the colour to the spl
+  hue.unshift(hue2); //Shift values in buffer 1 to the right
+  Serial.println(brightness);//Debug
   for(int i = 0; i<50; i++){
-    leds[i] = hue[i]; //Set leds[] to buffer values
+    leds[i] = CHSV(hue[i], 255, 255); //Set leds[] to buffer values
   }
   FastLED.show(); //Show it
   
