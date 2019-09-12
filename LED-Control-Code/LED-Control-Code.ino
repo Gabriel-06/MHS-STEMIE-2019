@@ -34,11 +34,11 @@ void setup() {
 void loop(){
   distance = ultrasonic.read(); //Read distance from the ultrasonic sensor
   spl = analogRead(SPL_PIN); //Read sound level from the mic
-  brightnessRead = map(distance, 0, 327, 0, 255); //Map the distance to the brightness
+  brightnessRead = map(distance, 357, 0, 1, 255); //Map the distance to the brightness
   bright.unshift(brightnessRead);
-  brightness = (bright[0]+bright[1]+bright[2]+bright[3]+bright[4])/5;
+  brightness = (bright[0]+bright[1]+bright[2]+bright[3]+bright[4]+bright[5]+bright[6]+bright[8]+bright[9])/10;
   FastLED.setBrightness(brightness); 
-  Serial.println(spl);//Debug
+  Serial.println(distance);//Debug
   hue2 = map(spl, 0, 1024, 0, 359); //Map the colour to the spl
   hue.unshift(hue2); //Shift values in buffer 1 to the right
   Serial.println(hue2);//Debug
