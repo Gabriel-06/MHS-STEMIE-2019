@@ -7,9 +7,14 @@
 /*
 If you don't know how to install libraries, please ask Mr Low or follow this guide: https://www.arduino.cc/en/guide/libraries
 
-This code uses a circular buffer, to store the hues and shift them along the display. Read up on this concept here:
+This code uses a circular bu                                                                                                  ffer, to store the hues and shift them along the display. Read up on this concept here:
 https://en.wikipedia.org/wiki/Circular_buffer
+
+This circular buffer allows the led to work as a type of histogram showing the various sound levels troughout time. It first fills it to 120 (number of leds connected)
+and then keeps overwriting it, starting with the oldest value.
 */
+
+
 
 #define LED_PIN 6 //The pin that LEDs are connected to
 #define LED_COUNT 120 //The number of LEDs
@@ -28,11 +33,9 @@ decode_results results; //Get decoded results from IR input
 
 int distance; //Distance variable
 int spl; //Sound level variable
-int brightness;
-int brightnessRead;
-int hue2;
+int brightness; //LED brightness variable
 
-String volUp = "16754775";
+String volUp = "16754775"; // IR codes for each button on the remote
 String volDown = "16769055";
 String hold = "4294967295";
 String prevButton;
@@ -49,10 +52,10 @@ void loop(){
   spl = analogRead(SPL_PIN); //Read sound level from the mic
   bright.unshift(map(distance, 357, 0, 1, 255)); //Add brighness value to the brightness buffer
   brightness = (bright[0]+bright[1]+bright[2]+bright[3]+bright[4]+bright[5]+bright[6]+bright[8]+bright[9])/10; //averaging of buffer values
-  FastLED.setBrightness(brightness);
+  FastLED.setBrightness(brightness); // Send brightness to the leds
   hue.unshift(map(spl, 0, 1024, 0, 359)); //Add maped value of spl to the hue buffer
   for(int i = 0; i<120; i++){
-    leds[i] = CHSV(hue[i], 255, 255); //Set leds[] to buffer values
+    leds[i] = CHSV(hue[i], 255, 255); //Set leds[] to circular buffer values
   }
   FastLED.show(); //Show it
 
@@ -96,5 +99,5 @@ void loop(){
         }
         irrecv.resume(); //Continue receiving IR input
    }
-  delay(100); //Wait 500ms
+  delay(100); //Wait 100ms
 }
