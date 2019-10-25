@@ -34,6 +34,7 @@ decode_results results; //Get decoded results from IR input
 int distance; //Distance variable
 int spl; //Sound level variable
 int brightness; //LED brightness variable
+int lastMillis; //Used for debouncing play and pause function
 
 String volUp = "16754775"; // IR codes for each button on the remote
 String volDown = "16769055";
@@ -59,16 +60,21 @@ void loop(){
   }
   FastLED.show(); //Show it
 
-   if (ultrasonic.read() < 20 and (shouldPlay) ) { //If an object comes close to the rangefinder press space to play video
-    Keyboard.press(0x20);
-    Keyboard.releaseAll();
-    shouldPlay = false;
+   if((lastMillis - millis()) > 2000  ){
+    lastMillis = millis();  
+    if (ultrasonic.read() <   20 and (shouldPlay) ) { //If an object comes close to the rangefinder press space to play video
+      Serial.println(ultrasonic.read() + "Play");
+      Keyboard.press(0x20);
+      Keyboard.releaseAll();
+      shouldPlay = false;
+     } 
+    else if (ultrasonic.read() >  20 and !(shouldPlay) ) { //If an object leaves the rangefinder press space again to pause video
+      Serial.println(ultrasonic.read() + "Stop");
+      Keyboard.press(0x20);
+      Keyboard.releaseAll();
+      shouldPlay = true;
     }
-   else if (ultrasonic.read() > 20 and !(shouldPlay) ) { //If an object leaves the rangefinder press space again to pause video
-    Keyboard.press(0x20);
-    Keyboard.releaseAll();
-    shouldPlay = true;
-   }
+   } 
 
    if (irrecv.decode(&results)){ //Checks if IR input has been received
         Serial.println(results.value, HEX); //Debug
